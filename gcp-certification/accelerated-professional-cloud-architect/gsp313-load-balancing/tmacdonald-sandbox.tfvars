@@ -1,0 +1,5 @@
+project = "prj-s-tmacdonald-sbx57-4437"
+region = "us-west-1"
+zone = "us-west-1c"
+jumphost_name = "test"
+firewall_rule_name = "test"
