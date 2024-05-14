@@ -1,3 +1,8 @@
+variable "vpc_name" {
+  description = "Name of base VPC"
+  default = "base"
+}
+
 variable "project" {
   description = "name of project"
   default = "prj-s-tmacdonald-sbx57-1992"

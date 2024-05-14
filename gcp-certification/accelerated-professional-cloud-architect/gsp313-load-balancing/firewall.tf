@@ -1,13 +1,10 @@
-resource "google_compute_firewall_policy_rule" "http" {
-  firewall_policy = "default"
-  action = "allow"
-  direction = "INGRESS"
-  priority = 100
-  match {
-    layer4_configs {
-      ip_protocol = "tcp"
-      ports = [80]
-    }
-    src_ip_ranges = ["0.0.0.0/0"]
+resource "google_compute_firewall" "http" {
+  name = var.firewall_rule_name
+  network = var.network_name
+  source_ranges = ["0.0.0.0/0"]
+
+  allow {
+    protocol = "tcp"
+    ports = ["80"]
   }
 }

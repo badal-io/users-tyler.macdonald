@@ -10,10 +10,13 @@ resource "google_compute_instance" "jumphost" {
   }
 
   network_interface {
-    network = "default"
-    access_config {
-      network_tier = "PREMIUM"
+    network = var.network_name
+    subnetwork = var.subnetwork_name
+    dynamic "access_config" {
+      for_each = var.external_ip ? [1] : []
+      content {
+        network_tier = "PREMIUM"
+      }
     }
   }
-
 }
