@@ -6,3 +6,4 @@ subnetwork_name = "northamerica-northeast2"
 jumphost_name = "test"
 firewall_rule_name = "test"
 external_ip = false
+state_file = "state/tmacdonald-sandbox.tfstate"

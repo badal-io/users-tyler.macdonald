@@ -16,7 +16,11 @@ resource "google_compute_instance_template" "webserver" {
   network_interface {
     network = var.network_name
     subnetwork = var.subnetwork_name
-    access_config {
+    dynamic "access_config" {
+      for_each = var.external_ip ? [1] : []
+      content {
+        network_tier = "PREMIUM"
+      }
     }
   }
 
@@ -42,13 +46,14 @@ resource "google_compute_instance_group_manager" "webserver" {
   }
 
   auto_healing_policies {
-    health_check = google_compute_health_check.webserver.self_link
+    health_check = google_compute_region_health_check.webserver.self_link
     initial_delay_sec = 60
   }
 }
 
-resource "google_compute_health_check" "webserver" {
+resource "google_compute_region_health_check" "webserver" {
   name = "${var.codename}-webserver"
+  region = var.region
   timeout_sec = 5
   check_interval_sec = 5
   http_health_check {
@@ -58,9 +63,9 @@ resource "google_compute_health_check" "webserver" {
 
 resource "google_compute_region_backend_service" "webserver" {
   name = "${var.codename}-webserver"
-  health_checks = [google_compute_health_check.webserver.id]
+  health_checks = [google_compute_region_health_check.webserver.id]
   port_name = "http"
-  load_balancing_scheme = "INTERNAL_MANAGED"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
   region = var.region
   backend {
     group = google_compute_instance_group_manager.webserver.instance_group
@@ -85,9 +90,11 @@ resource "google_compute_forwarding_rule" "webserver" {
   name = "${var.codename}-webserver"
   target = google_compute_region_target_http_proxy.webserver.id
   network = var.network_name
-  subnetwork = var.subnetwork_name
   region = var.region
   ip_protocol = "TCP"
   port_range = "80"
-  load_balancing_scheme = "INTERNAL_MANAGED"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  depends_on = [
+    google_compute_region_backend_service.webserver
+  ]
 }
