@@ -7,12 +7,21 @@ locals {
       ]
     ]
   ])
+
+  startup_vars = {
+    wordpress_sql_user = var.wordpress_sql_user
+    wordpress_sql_password = var.wordpress_sql_password
+    db_root_password = random_password.database_root_password.result
+  }
 }
 
 resource "google_compute_instance" "bastion" {
   zone = var.zone
   name = "${var.codename}-bastion"
   machine_type = var.instance_type
+  metadata_startup_script = templatefile(
+    "${path.module}/bastion_startup.sh.tftpl", local.startup_vars)
+
   boot_disk {
     auto_delete = true
   }
@@ -29,4 +38,6 @@ resource "google_compute_instance" "bastion" {
       }
     }
   }
+
+  depends_on = [google_sql_database_instance.wordpress]
 }
