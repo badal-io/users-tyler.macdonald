@@ -46,14 +46,13 @@ resource "google_compute_instance_group_manager" "webserver" {
   }
 
   auto_healing_policies {
-    health_check = google_compute_region_health_check.webserver.self_link
+    health_check = google_compute_health_check.webserver.self_link
     initial_delay_sec = 60
   }
 }
 
-resource "google_compute_region_health_check" "webserver" {
+resource "google_compute_health_check" "webserver" {
   name = "${var.codename}-webserver"
-  region = var.region
   timeout_sec = 5
   check_interval_sec = 5
   http_health_check {
@@ -61,12 +60,11 @@ resource "google_compute_region_health_check" "webserver" {
   }
 }
 
-resource "google_compute_region_backend_service" "webserver" {
+resource "google_compute_backend_service" "webserver" {
   name = "${var.codename}-webserver"
-  health_checks = [google_compute_region_health_check.webserver.id]
+  health_checks = [google_compute_health_check.webserver.id]
   port_name = "http"
   load_balancing_scheme = "EXTERNAL_MANAGED"
-  region = var.region
   backend {
     group = google_compute_instance_group_manager.webserver.instance_group
     balancing_mode = "UTILIZATION"
@@ -74,27 +72,29 @@ resource "google_compute_region_backend_service" "webserver" {
   }
 }
 
-resource "google_compute_region_url_map" "webserver" {
+resource "google_compute_url_map" "webserver" {
   name = "${var.codename}-webserver"
-  default_service = google_compute_region_backend_service.webserver.id
-  region = var.region
+
+  default_service = google_compute_backend_service.webserver.id
+  path_matcher {
+    name = "allpaths"
+    default_service = google_compute_backend_service.webserver.id
+  }
 }
 
-resource "google_compute_region_target_http_proxy" "webserver" {
+resource "google_compute_target_http_proxy" "webserver" {
   name = "${var.codename}-webserver"
-  url_map = google_compute_region_url_map.webserver.id
-  region = var.region
+  url_map = google_compute_url_map.webserver.id
 }
 
 resource "google_compute_forwarding_rule" "webserver" {
   name = "${var.codename}-webserver"
-  target = google_compute_region_target_http_proxy.webserver.id
+  target = google_compute_target_http_proxy.webserver.id
   network = var.network_name
-  region = var.region
   ip_protocol = "TCP"
   port_range = "80"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   depends_on = [
-    google_compute_region_backend_service.webserver
+    google_compute_backend_service.webserver
   ]
 }
