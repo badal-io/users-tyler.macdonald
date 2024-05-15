@@ -27,3 +27,9 @@ variable "kubernetes_config_url" {
   type = string
   default = "gs://cloud-training/gsp321/wp-k8s"
 }
+
+variable "external_ip" {
+  description = "should compute instances have an external ip?"
+  type = bool
+  default = true
+}

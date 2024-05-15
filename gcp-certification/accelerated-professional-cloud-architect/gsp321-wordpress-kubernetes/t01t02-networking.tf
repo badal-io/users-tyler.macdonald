@@ -36,3 +36,15 @@ resource "google_compute_subnetwork" "subnet" {
   region = var.region
   ip_cidr_range = each.value.cidr
 }
+
+resource "google_compute_firewall" "console_ssh" {
+  for_each = google_compute_network.vpc
+  name = "console-ssh"
+  network = each.value.id
+  description = "Allow console.cloud.google.com incoming SSH"
+  source_ranges = ["35.235.240.0/20"]
+  allow {
+    protocol = "tcp"
+    ports = ["22"]
+  }
+}
