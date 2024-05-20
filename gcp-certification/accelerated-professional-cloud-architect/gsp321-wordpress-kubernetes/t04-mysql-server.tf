@@ -25,5 +25,3 @@ resource "google_sql_database_instance" "wordpress" {
     tier = "db-f1-micro"
   }
 }
-
-

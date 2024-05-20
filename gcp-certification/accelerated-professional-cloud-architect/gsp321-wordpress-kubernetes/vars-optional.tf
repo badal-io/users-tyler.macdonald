@@ -33,3 +33,16 @@ variable "external_ip" {
   type = bool
   default = true
 }
+
+variable "cluster_instance_type" {
+  description = "which instance type to use for GKE nodes"
+  type = string
+  default = "e2-standard-4"
+}
+
+# required because in terraform, service accounts must by 6+ letters long
+variable "proxy_account" {
+  description = "name of the proxy account"
+  type = string
+  default = "proxies"
+}
