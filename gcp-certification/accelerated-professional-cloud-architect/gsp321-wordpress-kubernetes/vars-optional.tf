@@ -46,3 +46,9 @@ variable "proxy_account" {
   type = string
   default = "proxies"
 }
+
+variable "owners" {
+  description = "Google account emails for other owners"
+  type = set(string)
+  default = []
+}

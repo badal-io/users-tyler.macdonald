@@ -12,8 +12,3 @@ variable "zone" {
   description = "Zone to deploy to be default"
   type = string
 }
-
-variable "coworker_account" {
-  description = "Google account email for second engineer"
-  type = string
-}
