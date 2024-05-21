@@ -19,3 +19,8 @@ provider "helm" {
     config_path = local_file.kubeconfig.filename
   }
 }
+
+data "google_service_account" "proxy" {
+  account_id = var.proxy_account
+}
+

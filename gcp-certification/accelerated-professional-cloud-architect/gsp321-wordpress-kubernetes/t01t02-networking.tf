@@ -70,3 +70,23 @@ resource "google_service_networking_connection" "internal" {
   depends_on = [module.apis]
 }
 
+resource "google_compute_router" "router" {
+  for_each = google_compute_network.vpc
+  name = each.key
+  network = each.value.id
+}
+
+resource "google_compute_router_nat" "nat" {
+  for_each = google_compute_router.router
+  name = each.key
+  router = each.value.name
+  region = each.value.region
+  nat_ip_allocate_option = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+
+  log_config {
+    enable = true
+    filter = "ERRORS_ONLY"
+  }
+}
+

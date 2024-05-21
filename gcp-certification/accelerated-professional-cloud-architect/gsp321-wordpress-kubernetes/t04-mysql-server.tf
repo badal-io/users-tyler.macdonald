@@ -4,7 +4,8 @@
 
 resource "random_password" "database_root_password" {
   length = 16
-  special = true
+  special = false
+  upper = false
 }
 
 output "database_root_password" {
@@ -42,6 +43,14 @@ resource "google_sql_database_instance" "wordpress" {
   }
 
   depends_on = [
-    google_service_networking_connection.internal, google_compute_global_address.internal
+    google_service_networking_connection.internal,
+    google_compute_global_address.internal
   ]
+}
+
+resource "google_sql_user" "wordpress_admin" {
+  name = "admin"
+  password = random_password.database_root_password.result
+  host = "%"
+  instance = google_sql_database_instance.wordpress.name
 }

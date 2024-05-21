@@ -1,5 +1,5 @@
 locals {
-  bastion_subnets = flatten([
+  management_subnets = flatten([
     for vpc_name, subnets in local.network_topology: [
       [
         for subnet_name, cidr in subnets: subnet_name
@@ -12,6 +12,7 @@ locals {
     wordpress_sql_user = var.wordpress_sql_user
     wordpress_sql_password = var.wordpress_sql_password
     db_root_password = random_password.database_root_password.result
+    db_ip = google_sql_database_instance.wordpress.ip_address.0.ip_address
   }
 }
 
@@ -21,6 +22,7 @@ resource "google_compute_instance" "bastion" {
   machine_type = var.instance_type
   metadata_startup_script = templatefile(
     "${path.module}/bastion_startup.sh.tftpl", local.startup_vars)
+  allow_stopping_for_update = true
 
   boot_disk {
     auto_delete = true
@@ -30,8 +32,13 @@ resource "google_compute_instance" "bastion" {
     }
   }
 
+  service_account {
+    email = data.google_service_account.proxy.email
+    scopes = ["cloud-platform"]
+  }
+
   dynamic "network_interface" {
-    for_each = local.bastion_subnets
+    for_each = local.management_subnets
     content {
       subnetwork = network_interface.value
       dynamic "access_config" {
@@ -43,5 +50,8 @@ resource "google_compute_instance" "bastion" {
     }
   }
 
-  depends_on = [google_sql_database_instance.wordpress, google_compute_subnetwork.subnet]
+  depends_on = [
+    google_sql_database_instance.wordpress,
+    google_compute_subnetwork.subnet
+  ]
 }

@@ -1,7 +1,3 @@
-data "google_service_account" "proxy" {
-  account_id = var.proxy_account
-}
-
 resource "google_service_account_key" "gke" {
   service_account_id = data.google_service_account.proxy.name
   public_key_type = "TYPE_X509_PEM_FILE"
