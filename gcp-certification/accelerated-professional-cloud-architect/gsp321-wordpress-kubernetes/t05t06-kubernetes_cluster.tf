@@ -56,13 +56,12 @@ resource "kubernetes_secret" "gke" {
   depends_on = [local_file.kubeconfig]
 }
 
-data "template_file" "kubeconfig" {
-  template = file("${path.module}/kubeconfig.yaml.tftpl")
-  vars = {
+locals {  
+  kubeconfig = templatefile("${path.module}/kubeconfig.yaml.tftpl", {
     server = google_container_cluster.gke.endpoint
     token = data.google_client_config.gke.access_token
     certificate = google_container_cluster.gke.master_auth[0].cluster_ca_certificate
-  }
+  })
 }
 
 resource "local_file" "kubeconfig" {
@@ -70,5 +69,5 @@ resource "local_file" "kubeconfig" {
   # so that other stuff that uses this value considers it "unknown until
   # after apply"
   filename = split("!!", "${path.root}/kubeconfig.yaml!!${google_container_cluster.gke.master_version}")[0]
-  content = data.template_file.kubeconfig.rendered
+  content = local.kubeconfig
 }

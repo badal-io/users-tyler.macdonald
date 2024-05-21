@@ -26,3 +26,12 @@ variable "bucket_name" {
   description = "configuration bucket name"
   default = "badal-tmacdonald-terraform"
 }
+
+variable "create_proxy_account" {
+  description = "should we create the proxy account?"
+  default = true
+}
+
+variable "proxy_account" {
+  description = "name of the proxy account"
+}

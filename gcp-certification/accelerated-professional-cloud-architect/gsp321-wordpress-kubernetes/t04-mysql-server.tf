@@ -49,8 +49,8 @@ resource "google_sql_database_instance" "wordpress" {
 }
 
 resource "google_sql_user" "wordpress_admin" {
-  name = "admin"
-  password = random_password.database_root_password.result
+  name = "root"
+  password = ""
   host = "%"
   instance = google_sql_database_instance.wordpress.name
 }
