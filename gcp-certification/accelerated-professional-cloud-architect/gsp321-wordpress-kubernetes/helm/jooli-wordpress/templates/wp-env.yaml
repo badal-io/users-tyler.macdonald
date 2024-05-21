@@ -1,0 +1,22 @@
+{{- $sql_user = .Values.db.sql_user | required ".db.sql_user is required" -}}
+{{- $sql_password = .Values.db.sql_password |
+      required ".db.sql_password is required" -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: wordpress-volumeclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database
+type: Opaque
+stringData:
+  username: {{ $sql_user | quote }}
+  password: {{ $sql_password | quote }}

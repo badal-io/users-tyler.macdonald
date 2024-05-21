@@ -39,7 +39,7 @@ resource "google_compute_subnetwork" "subnet" {
 
 resource "google_compute_firewall" "console_ssh" {
   for_each = google_compute_network.vpc
-  name = "console-ssh"
+  name = "gsp321-${each.key}-console-ssh"
   network = each.value.id
   description = "Allow console.cloud.google.com incoming SSH"
   source_ranges = ["35.235.240.0/20"]
@@ -48,3 +48,23 @@ resource "google_compute_firewall" "console_ssh" {
     ports = ["22"]
   }
 }
+
+# peering path for google services when external ip is turned off
+resource "google_compute_global_address" "internal" {
+  for_each = var.external_ip ? {} : google_compute_network.vpc
+
+  name = "gsp321-${each.key}-internal"
+  purpose = "VPC_PEERING"
+  address_type = "INTERNAL"
+  prefix_length = 16
+  network = each.value.id 
+}
+
+resource "google_service_networking_connection" "internal" {
+  for_each = google_compute_global_address.internal
+
+  network = each.value.network
+  service = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [each.value.name]
+}
+

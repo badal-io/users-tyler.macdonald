@@ -7,7 +7,6 @@ resource "random_password" "database_root_password" {
   special = true
 }
 
-
 output "database_root_password" {
   description = "Root password for MySQL database"
   value = random_password.database_root_password.result
@@ -15,6 +14,8 @@ output "database_root_password" {
 }
 
 resource "google_sql_database_instance" "wordpress" {
+  # provider = google-beta
+
   name = "${var.codename}-dev-db"
   region = var.region
   deletion_protection = false
@@ -23,5 +24,24 @@ resource "google_sql_database_instance" "wordpress" {
 
   settings {
     tier = "db-f1-micro"
+    dynamic "ip_configuration" {
+      for_each = var.external_ip ? [1] : []
+      content {
+        ipv4_enabled = true
+      }
+    }
+    dynamic "ip_configuration" {
+      for_each = var.external_ip ? [] : [1]
+      content {
+        ipv4_enabled = false
+        private_network = google_compute_network.vpc[
+          "${var.codename}-dev-vpc"].id
+        enable_private_path_for_google_cloud_services = true
+      }
+    }
   }
+
+  depends_on = [
+    google_service_networking_connection.internal, google_compute_global_address.internal
+  ]
 }

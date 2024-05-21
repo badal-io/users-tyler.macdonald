@@ -1,0 +1,8 @@
+# database connection details
+database:
+  # name of the Google Compute instance to connect to
+  gce_connection_name: 
+  # MySQL username
+  sql_user:
+  # MySQL password
+  sql_password:

@@ -24,12 +24,16 @@ resource "google_compute_instance" "bastion" {
 
   boot_disk {
     auto_delete = true
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      size = 20
+    }
   }
 
   dynamic "network_interface" {
     for_each = local.bastion_subnets
     content {
-      subnetwork = network_interface.key
+      subnetwork = network_interface.value
       dynamic "access_config" {
         for_each = var.external_ip ? [1] : []
         content {
@@ -39,5 +43,5 @@ resource "google_compute_instance" "bastion" {
     }
   }
 
-  depends_on = [google_sql_database_instance.wordpress]
+  depends_on = [google_sql_database_instance.wordpress, google_compute_subnetwork.subnet]
 }

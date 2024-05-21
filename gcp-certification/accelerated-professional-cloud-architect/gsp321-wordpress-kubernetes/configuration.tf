@@ -3,9 +3,19 @@ provider "google" {
   project = var.project
 }
 
+provider "google-beta" {
+  region = var.region
+  project = var.project
+}
+
 data "google_client_config" "gke" {}
 
 provider "kubernetes" {
-  # hack to force `config_path` to depend on the creation of the cluster
-  config_path = split("!!", "${local_sensitive_file.kubeconfig.filename}!!${google_container_cluster.gke.master_version}")[0]
+  config_path = local_sensitive_file.kubeconfig.filename
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = local_sensitive_file.kubeconfig.filename
+  }
 }

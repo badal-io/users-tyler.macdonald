@@ -10,6 +10,9 @@ resource "google_service_account_key" "gke" {
 resource "google_container_cluster" "gke" {
   name = "${var.codename}-dev"
   location = var.region
+  network = google_compute_network.vpc["${var.codename}-dev-vpc"].self_link
+  subnetwork = google_compute_subnetwork.subnet[
+    "${var.codename}-dev-wp"].self_link
   remove_default_node_pool = true
   initial_node_count = 1
   deletion_protection = false
@@ -52,7 +55,10 @@ locals {
 }
 
 resource "local_sensitive_file" "kubeconfig" {
-  filename = "${path.root}/kubeconfig.yaml"
+  # hack to force `filename` to depend on the creation of the cluster
+  # so that other stuff that uses this value considers it "unknown until
+  # after apply"
+  filename = split("!!", "${path.root}/kubeconfig.yamL!!${google_container_cluster.gke.master_version}")[0]
   content = templatefile(
     "${path.module}/kubeconfig.yaml.tftpl", local.kubeconfig_vars)
 }
