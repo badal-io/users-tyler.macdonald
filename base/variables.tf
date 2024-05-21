@@ -1,11 +1,15 @@
+variable "project" {
+  description = "name of project"
+}
+
+variable "external_ip" {
+  description = "do we have external ip access"
+  default = true
+}
+
 variable "vpc_name" {
   description = "Name of base VPC"
   default = "base"
-}
-
-variable "project" {
-  description = "name of project"
-  default = "prj-s-tmacdonald-sbx57-1992"
 }
 
 variable "region" {
@@ -16,4 +20,9 @@ variable "region" {
 variable "zone" {
   description = "default zone to operate in"
   default = "northamerica-northeast2-b"
+}
+
+variable "bucket_name" {
+  description = "configuration bucket name"
+  default = "badal-tmacdonald-terraform"
 }

@@ -15,14 +15,14 @@ resource "google_compute_subnetwork" "region" {
 }
 
 resource "google_compute_subnetwork" "proxy" {
-  #  provider = google-beta
+  provider = google-beta
   name          = "website-net-proxy"
   ip_cidr_range = "10.129.0.0/26"
   region        = var.region
   network       = google_compute_network.vpc_network.id
   purpose       = "REGIONAL_MANAGED_PROXY"
   role          = "ACTIVE"
-  private_ip_google_access = true
+  private_ip_google_access = var.external_ip ? null : true
 }
 
 resource "google_compute_firewall" "console_ssh" {
