@@ -1,4 +1,4 @@
-{{- $connection_name = .Values.db.connection_name |
+{{- $connection_name := .Values.db.connection_name |
       required ".db.connection_name is required" -}}
 apiVersion: apps/v1
 kind: Deployment

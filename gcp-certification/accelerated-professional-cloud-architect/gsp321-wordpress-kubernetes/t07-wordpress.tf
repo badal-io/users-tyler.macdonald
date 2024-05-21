@@ -12,5 +12,5 @@ resource "helm_release" "wordpress" {
   name = "wordpress"
   chart = "${path.module}/helm/jooli-wordpress"
   values = [ yamlencode(local.wordpress_values) ]
-  depends_on = [google_container_cluster.gke]
+  depends_on = [google_container_cluster.gke, local_file.kubeconfig]
 }

@@ -35,6 +35,7 @@ resource "google_compute_subnetwork" "subnet" {
   network = each.value.vpc_name
   region = var.region
   ip_cidr_range = each.value.cidr
+  depends_on = [google_compute_network.vpc]
 }
 
 resource "google_compute_firewall" "console_ssh" {
@@ -66,5 +67,6 @@ resource "google_service_networking_connection" "internal" {
   network = each.value.network
   service = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [each.value.name]
+  depends_on = [module.apis]
 }
 

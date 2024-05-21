@@ -11,11 +11,11 @@ provider "google-beta" {
 data "google_client_config" "gke" {}
 
 provider "kubernetes" {
-  config_path = local_sensitive_file.kubeconfig.filename
+  config_path = local_file.kubeconfig.filename
 }
 
 provider "helm" {
   kubernetes {
-    config_path = local_sensitive_file.kubeconfig.filename
+    config_path = local_file.kubeconfig.filename
   }
 }
