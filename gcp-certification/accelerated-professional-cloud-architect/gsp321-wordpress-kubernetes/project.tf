@@ -12,7 +12,10 @@ module "apis" {
     "compute.googleapis.com",
     "container.googleapis.com",
     "sqladmin.googleapis.com",
-  ] : [ "servicenetworking.googleapis.com" ]
+    "servicenetworking.googleapis.com",
+  ] : [
+    "servicenetworking.googleapis.com",
+  ]
   depends_on = [google_project.project]
 }
 

@@ -1,4 +1,4 @@
-project = "gsp321-test-05"
+project = "gsp321-test-08"
 create_project = true
 auto_create_network = false
 region = "us-west1"

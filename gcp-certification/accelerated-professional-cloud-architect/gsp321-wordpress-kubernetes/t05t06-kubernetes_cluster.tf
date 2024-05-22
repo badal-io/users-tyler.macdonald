@@ -23,6 +23,8 @@ resource "google_container_cluster" "gke" {
     disk_size_gb = 50
     disk_type = "pd-standard"
   }
+
+  depends_on = [module.apis]
 }
 
 resource "kubernetes_secret" "gke" {
