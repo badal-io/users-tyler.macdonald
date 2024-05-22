@@ -11,7 +11,6 @@ locals {
   startup_vars = {
     wordpress_sql_user = var.wordpress_sql_user
     wordpress_sql_password = var.wordpress_sql_password
-    db_root_password = random_password.database_root_password.result
     db_ip = google_sql_database_instance.wordpress.ip_address.0.ip_address
   }
 }

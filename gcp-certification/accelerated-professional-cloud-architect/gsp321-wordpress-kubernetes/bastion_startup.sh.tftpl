@@ -5,7 +5,7 @@ set -ex
 apt -y update
 apt -y install default-mysql-client
 
-mysql -uadmin -p"${db_root_password}" -h"${db_ip}" <<"EOT"
+mysql -uroot -h"${db_ip}" <<"EOT"
   CREATE DATABASE wordpress;
   CREATE USER "${wordpress_sql_user}"@"%"
     IDENTIFIED BY "${wordpress_sql_password}";

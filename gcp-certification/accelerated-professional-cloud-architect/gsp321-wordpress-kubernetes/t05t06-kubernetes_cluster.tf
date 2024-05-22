@@ -10,16 +10,16 @@ resource "google_container_cluster" "gke" {
   subnetwork = google_compute_subnetwork.subnet[
     "${var.codename}-dev-wp"].self_link
   remove_default_node_pool = true
-  initial_node_count = 1
+  initial_node_count = 2
   deletion_protection = false
-
-  depends_on = [module.apis]
+  node_locations = [var.zone]
 }
 
 resource "google_container_node_pool" "gke" {
   name = "${var.codename}-dev"
   location = var.region
   cluster = google_container_cluster.gke.name
+  node_locations = [var.zone]
 
   node_config {
     preemptible = true
@@ -33,7 +33,7 @@ resource "google_container_node_pool" "gke" {
   }
 
   autoscaling {
-    total_min_node_count = 1
+    total_min_node_count = 2
     total_max_node_count = 2
   }
 
@@ -47,7 +47,8 @@ resource "kubernetes_secret" "gke" {
   metadata {
     name = "cloudsql-instance-credentials"
     annotations = {
-      "kubernetes.io/service-account.name" = data.google_service_account.proxy.name
+      "kubernetes.io/service-account.name" = (
+        data.google_service_account.proxy.name)
     }
   }
   data = {

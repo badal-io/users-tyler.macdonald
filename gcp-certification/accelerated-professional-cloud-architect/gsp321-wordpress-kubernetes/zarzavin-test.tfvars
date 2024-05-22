@@ -1,7 +1,11 @@
-project = "nomadic-raceway-424002-s5"
-region = "northamerica-northeast1"
-zone = "northamerica-northeast1-c"
-proxy_account = "proxies"
+project = "gsp321-test-05"
+create_project = true
+auto_create_network = false
+region = "us-west1"
+zone = "us-west1-c"
+create_proxy_account = true
+proxy_account = "gsp-test-01-sql-proxy"
+billing_account = "013090-604918-1CC0F7"
 
-coworker_account = null
-external_ip = false
+owners = []
+external_ip = true

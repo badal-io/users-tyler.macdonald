@@ -1,3 +1,27 @@
+variable "billing_account" {
+  description = "billing account to apply to new project"
+  type = string
+  default = null
+}
+
+variable "create_proxy_account" {
+  description = "do we create the proxy account"
+  type = bool
+  default = false
+}
+
+variable "create_project" {
+  description = "do we create the project"
+  type = bool
+  default = false
+}
+
+variable "auto_create_network" {
+  type = bool
+  default = false
+  description = "When creating project, should we create default network"
+}
+
 variable "codename" {
   description = "codename for this deployment"
   type = string

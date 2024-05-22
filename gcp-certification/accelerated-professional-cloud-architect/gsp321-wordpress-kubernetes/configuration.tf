@@ -22,5 +22,6 @@ provider "helm" {
 
 data "google_service_account" "proxy" {
   account_id = var.proxy_account
+  depends_on = [google_service_account.proxy]
 }
 

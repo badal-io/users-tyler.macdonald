@@ -27,7 +27,7 @@ resource "google_monitoring_uptime_check_config" "wordpress" {
   monitored_resource {
     type = "uptime_url"
     labels = {
-      project_id = var.project
+      project_id = local.project
       host = local.service_ip
     }
   }

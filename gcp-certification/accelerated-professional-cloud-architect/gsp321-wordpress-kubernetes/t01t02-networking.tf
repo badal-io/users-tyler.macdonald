@@ -15,6 +15,7 @@ resource "google_compute_network" "vpc" {
   for_each = local.network_topology
   name = each.key
   auto_create_subnetworks = false
+  project = local.project
 }
 
 locals {
@@ -52,19 +53,19 @@ resource "google_compute_firewall" "console_ssh" {
 
 # peering path for google services when external ip is turned off
 resource "google_compute_global_address" "internal" {
-  for_each = var.external_ip ? {} : google_compute_network.vpc
+  for_each = google_compute_network.vpc
 
   name = "gsp321-${each.key}-internal"
   purpose = "VPC_PEERING"
   address_type = "INTERNAL"
   prefix_length = 16
-  network = each.value.id 
+  network = each.value.name
 }
 
 resource "google_service_networking_connection" "internal" {
   for_each = google_compute_global_address.internal
 
-  network = each.value.network
+  network = reverse(split("/", each.value.network))[0]
   service = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [each.value.name]
   depends_on = [module.apis]
