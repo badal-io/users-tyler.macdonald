@@ -7,14 +7,12 @@ resource "google_project" "project" {
 }
 
 module "apis" {
-  count = var.create_project ? 1 : 0
   source = "../../../modules/gcp_project_apis"
-  services = [
+  services = var.create_project ? [
     "compute.googleapis.com",
     "container.googleapis.com",
-    "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
-  ]
+  ] : [ "servicenetworking.googleapis.com" ]
   depends_on = [google_project.project]
 }
 

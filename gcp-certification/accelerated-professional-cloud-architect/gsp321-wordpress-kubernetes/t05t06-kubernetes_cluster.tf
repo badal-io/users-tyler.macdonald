@@ -9,18 +9,10 @@ resource "google_container_cluster" "gke" {
   network = google_compute_network.vpc["${var.codename}-dev-vpc"].self_link
   subnetwork = google_compute_subnetwork.subnet[
     "${var.codename}-dev-wp"].self_link
-  remove_default_node_pool = true
+  remove_default_node_pool = false
   initial_node_count = 2
   deletion_protection = false
   node_locations = [var.zone]
-}
-
-resource "google_container_node_pool" "gke" {
-  name = "${var.codename}-dev"
-  location = var.region
-  cluster = google_container_cluster.gke.name
-  node_locations = [var.zone]
-
   node_config {
     preemptible = true
     machine_type = var.cluster_instance_type
@@ -30,16 +22,6 @@ resource "google_container_node_pool" "gke" {
     ]
     disk_size_gb = 50
     disk_type = "pd-standard"
-  }
-
-  autoscaling {
-    total_min_node_count = 2
-    total_max_node_count = 2
-  }
-
-  upgrade_settings {
-    max_surge = 1
-    max_unavailable = 1
   }
 }
 
